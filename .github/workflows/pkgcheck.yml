@@ -1,0 +1,19 @@
+name: Gentoo Overlay QA (pkgcheck)
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  pkgcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout overlay repository
+        uses: actions/checkout@v4
+
+      - name: Run pkgcheck
+        uses: pkgcore/pkgcheck-action@v1
+        with:
+          args: --blame

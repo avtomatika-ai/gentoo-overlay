@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata>
+	<maintainer type="person">
+		<email>madgagarin@gmail.com</email>
+		<name>Dmitrii Gagarin</name>
+	</maintainer>
+	<maintainer type="project">
+		<email>dev@avtomatika.ai</email>
+		<name>Avtomatika AI Core Team</name>
+	</maintainer>
+	<longdescription lang="en">
+		Hypa is a high-performance context optimisation CLI for AI harnesses,
+		providing smart command buffering, compression, and tree-sitter based code indexing.
+	</longdescription>
+	<upstream>
+		<bugs-to>https://github.com/Hypabolic/Hypa/issues</bugs-to>
+		<remote-id type="github">Hypabolic/Hypa</remote-id>
+	</upstream>
+</pkgmetadata>
