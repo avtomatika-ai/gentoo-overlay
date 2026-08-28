@@ -1,0 +1,4 @@
+# /etc/conf.d/cmxd: Configuration for cmxd daemon
+
+# Options to pass to cmxd. Run 'cmxd --help' for details.
+CMXD_OPTS=""

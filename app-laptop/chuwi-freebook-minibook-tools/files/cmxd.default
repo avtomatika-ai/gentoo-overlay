@@ -1,0 +1,3 @@
+# Configuration for cmxd daemon (Chuwi FreeBook / MiniBook X)
+# Run cmxd --help to see available options
+CMXD_OPTS=""

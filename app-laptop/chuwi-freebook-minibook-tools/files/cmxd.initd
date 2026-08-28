@@ -1,0 +1,23 @@
+#!/sbin/openrc-run
+# Copyright 2026 Gentoo Authors
+# Distributed under the terms of the GNU General Public License v2
+
+name="cmxd"
+description="Chuwi FreeBook and MiniBook X Tablet Mode Daemon"
+command="/usr/sbin/cmxd"
+command_args="${CMXD_OPTS}"
+command_background="true"
+pidfile="/run/cmxd.pid"
+
+depend() {
+	need localmount
+	use dbus
+	after udev modules
+}
+
+start_pre() {
+	checkpath -d -m 0755 /run/cmxd
+	if ! lsmod | grep -q "^cmx "; then
+		modprobe -q cmx
+	fi
+}

@@ -1,0 +1,90 @@
+--- a/drivers/acpi/Makefile
++++ b/drivers/acpi/Makefile
+@@ -9,6 +9,10 @@
+ CFLAGS_processor_idle.o += -DDISABLE_BRANCH_PROFILING
+ endif
+ 
++ifdef CONFIG_CHUWI_MINIBOOK_X
++CFLAGS_scan.o += -DCONFIG_CHUWI_MINIBOOK_X
++endif
++
+ #
+ # ACPI Boot-Time Table Parsing
+ #
+--- a/drivers/acpi/scan.c
++++ b/drivers/acpi/scan.c
+@@ -1764,6 +1764,9 @@
+ 		/* Non-conforming _HID for Cirrus Logic already released */
+ 		{"CLSA0100", },
+ 		{"CLSA0101", },
++		#ifdef CONFIG_CHUWI_MINIBOOK_X
++		{"MDA6655", },
++		#endif
+ 	/*
+ 	 * Some ACPI devs contain SerialBus resources even though they are not
+ 	 * attached to a serial bus at all.
+--- a/drivers/platform/x86/Kconfig
++++ b/drivers/platform/x86/Kconfig
+@@ -199,6 +199,22 @@
+ 	  To compile this driver as a module, choose M here. The module will
+ 	  be called adv_swbutton.
+ 
++config CHUWI_MINIBOOK_X
++	tristate "CHUWI FreeBook / Minibook X platform support"
++	depends on ACPI && I2C
++	select MXC4005
++	select SERIAL_MULTI_INSTANTIATE
++	help
++	  Support for CHUWI FreeBook and Minibook X convertible platforms.
++	  Enables two mxc4005 accelerometers on the laptop, allowing for
++	  hinge angle calculations and automatic tablet mode switching.
++
++	  Say M here if you have a CHUWI FreeBook or Minibook X laptop.
++
+ config APPLE_GMUX
+ 	tristate "Apple Gmux Driver"
+ 	depends on ACPI && PCI
+--- a/drivers/platform/x86/Makefile
++++ b/drivers/platform/x86/Makefile
+@@ -127,6 +127,11 @@
+ # Platform drivers
+ obj-$(CONFIG_SERIAL_MULTI_INSTANTIATE)	+= serial-multi-instantiate.o
+ obj-$(CONFIG_TOUCHSCREEN_DMI)		+= touchscreen_dmi.o
++
++# CHUWI FreeBook / Minibook X
++ifdef CONFIG_CHUWI_MINIBOOK_X
++CFLAGS_serial-multi-instantiate.o += -DCONFIG_CHUWI_MINIBOOK_X
++endif
+ obj-$(CONFIG_WIRELESS_HOTKEY)		+= wireless-hotkey.o
+ obj-$(CONFIG_X86_ANDROID_TABLETS)	+= x86-android-tablets/
+ 
+--- a/drivers/platform/x86/serial-multi-instantiate.c
++++ b/drivers/platform/x86/serial-multi-instantiate.c
+@@ -323,6 +323,17 @@
+ 	.bus_type = SMI_I2C,
+ };
+ 
++#ifdef CONFIG_CHUWI_MINIBOOK_X
++static const struct smi_node cmx_data = {
++	.instances = {
++		{ "mxc4005", IRQ_RESOURCE_NONE, 0 },
++		{ "mxc4005", IRQ_RESOURCE_NONE, 1 },
++		{}
++	},
++	.bus_type = SMI_I2C,
++};
++#endif
++
+ static const struct smi_node int3515_data = {
+ 	.instances = {
+ 		{ "tps6598x", IRQ_RESOURCE_APIC, 0 },
+@@ -411,6 +422,9 @@
+ 	/* Non-conforming _HID for Cirrus Logic already released */
+ 	{ "CLSA0100", (unsigned long)&cs35l41_hda },
+ 	{ "CLSA0101", (unsigned long)&cs35l41_hda },
++	#ifdef CONFIG_CHUWI_MINIBOOK_X
++	{ "MDA6655", (unsigned long)&cmx_data },
++	#endif
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(acpi, smi_acpi_ids);
