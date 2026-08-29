@@ -83,10 +83,41 @@ emaint sync -r avtomatika-ai
 | Category | Package | Keywords | Description |
 | :--- | :--- | :--- | :--- |
 | `dev-util` | **`hypa-bin`** | `~amd64` `~arm64` | High-performance context optimization and code indexing CLI for AI harnesses (Claude, Copilot, Codex) |
+| `app-laptop` | **`chuwi-freebook-minibook-tools`** | `~amd64` | Complete hardware support for Chuwi FreeBook 360 & MiniBook X convertibles (dual-sensor tablet mode, OpenRC service, kernel configs & patches) |
 
 ---
 
 ## Package Installation
+
+### Installing `chuwi-freebook-minibook-tools` (Chuwi 2-in-1 Hardware Support)
+
+1. Accept keywords:
+   ```bash
+   echo "app-laptop/chuwi-freebook-minibook-tools ~amd64" >> /etc/portage/package.accept_keywords/chuwi
+   ```
+
+2. Install the package:
+   ```bash
+   emerge --ask app-laptop/chuwi-freebook-minibook-tools::avtomatika-ai
+   ```
+
+3. **First-Time Installation Step:**
+   On a fresh system, re-emerge the kernel once to apply the dual-sensor patch and the ultra-fast 2-minute hardware configuration:
+   ```bash
+   mount /boot && mount /efi
+   emerge --ask sys-kernel/gentoo-kernel
+   reboot
+   ```
+
+4. Enable and start the OpenRC daemon:
+   ```bash
+   rc-update add cmxd default
+   rc-service cmxd start
+   ```
+
+*(All subsequent kernel updates via `@world` will automatically patch, compile in ~2 minutes, and rebuild the driver without any manual intervention!)*
+
+### Installing `hypa-bin`
 
 1. Accept testing keywords if necessary:
    ```bash
