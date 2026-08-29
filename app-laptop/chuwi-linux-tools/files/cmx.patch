@@ -1,0 +1,40 @@
+diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+index 530547c..fca0854 100644
+--- a/drivers/acpi/scan.c
++++ b/drivers/acpi/scan.c
+@@ -1762,6 +1762,7 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+ 		/* Non-conforming _HID for Cirrus Logic already released */
+ 		{"CLSA0100", },
+ 		{"CLSA0101", },
++		{"MDA6655", },
+ 	/*
+ 	 * Some ACPI devs contain SerialBus resources even though they are not
+ 	 * attached to a serial bus at all.
+diff --git a/drivers/platform/x86/serial-multi-instantiate.c b/drivers/platform/x86/serial-multi-instantiate.c
+index 1a36933..0413bdc 100644
+--- a/drivers/platform/x86/serial-multi-instantiate.c
++++ b/drivers/platform/x86/serial-multi-instantiate.c
+@@ -328,6 +328,15 @@ static const struct smi_node bsg2150_data = {
+ 	.bus_type = SMI_I2C,
+ };
+ 
++static const struct smi_node cmx_data = {
++	.instances = {
++		{ "mxc4005", IRQ_RESOURCE_NONE, 0 },
++		{ "mxc4005", IRQ_RESOURCE_NONE, 1 },
++		{}
++	},
++	.bus_type = SMI_I2C,
++};
++
+ static const struct smi_node int3515_data = {
+ 	.instances = {
+ 		{ "tps6598x", IRQ_RESOURCE_APIC, 0 },
+@@ -416,6 +425,7 @@ static const struct acpi_device_id smi_acpi_ids[] = {
+ 	/* Non-conforming _HID for Cirrus Logic already released */
+ 	{ "CLSA0100", (unsigned long)&cs35l41_hda },
+ 	{ "CLSA0101", (unsigned long)&cs35l41_hda },
++	{ "MDA6655", (unsigned long)&cmx_data },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(acpi, smi_acpi_ids);

@@ -1,0 +1,5 @@
+# Copyright (c) 2026 Dmitrii Gagarin <madgagarin>
+# Distributed under the terms of the GNU General Public License v2
+
+# Options for Chuwi FreeBook / MiniBook X tablet daemon
+# CMXD_OPTS="-v"

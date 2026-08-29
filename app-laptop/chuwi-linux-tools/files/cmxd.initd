@@ -1,5 +1,5 @@
 #!/sbin/openrc-run
-# Copyright 2026 Gentoo Authors
+# Copyright (c) 2026 Dmitrii Gagarin <madgagarin>
 # Distributed under the terms of the GNU General Public License v2
 
 name="cmxd"

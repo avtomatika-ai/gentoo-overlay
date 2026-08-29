@@ -5,13 +5,9 @@ EAPI=8
 
 inherit linux-mod-r1 systemd toolchain-funcs udev
 
-MY_COMMIT="db01ab812d7df5776fbc6e3d0e6991c407cc4db3"
-
-DESCRIPTION="Hardware support tools and daemons for Chuwi FreeBook and MiniBook X convertibles"
-HOMEPAGE="https://github.com/greymouser/minibook-x-tools"
-SRC_URI="https://github.com/greymouser/minibook-x-tools/archive/${MY_COMMIT}.tar.gz -> ${P}.tar.gz"
-
-S="${WORKDIR}/minibook-x-tools-${MY_COMMIT}"
+DESCRIPTION="Hardware support tools, kernel configs, and tablet mode daemon for Chuwi convertibles"
+HOMEPAGE="https://github.com/madgagarin/chuwi-linux-tools"
+SRC_URI="https://github.com/madgagarin/chuwi-linux-tools/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="GPL-2"
 SLOT="0"
@@ -30,11 +26,6 @@ BDEPEND="
 "
 
 CONFIG_CHECK="~MXC4005 ~SERIAL_MULTI_INSTANTIATE ~INPUT_UINPUT ~IIO ~IIO_BUFFER"
-
-src_prepare() {
-	default
-	eapply "${FILESDIR}/cmx-freebook-dmi.patch"
-}
 
 src_compile() {
 	# 1. Compile kernel module cmx.ko
@@ -63,8 +54,6 @@ src_install() {
 	newconfd "${FILESDIR}/cmxd.confd" cmxd
 	if use systemd; then
 		systemd_dounit "${FILESDIR}/cmxd.service"
-		insinto /etc/default
-		newins "${FILESDIR}/cmxd.default" cmxd
 	fi
 
 	# 4. Install kernel config snippet for dist-kernel / gentoo-kernel
@@ -96,7 +85,7 @@ pkg_postinst() {
 	udev_reload
 
 	elog "========================================================================"
-	elog "Chuwi FreeBook 360 & MiniBook X tools have been installed successfully!"
+	elog "Chuwi Linux Tools (v7.0.0) has been installed successfully!"
 	elog "========================================================================"
 	elog ""
 	elog "Installed hardware support files:"
