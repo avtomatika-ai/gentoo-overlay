@@ -5,9 +5,12 @@ EAPI=8
 
 inherit linux-mod-r1 systemd toolchain-funcs udev
 
+MY_PV="${PV%%-r*}"
+
 DESCRIPTION="Hardware support tools, kernel configs, and tablet mode daemon for Chuwi convertibles"
 HOMEPAGE="https://github.com/madgagarin/chuwi-linux-tools"
-SRC_URI="https://github.com/madgagarin/chuwi-linux-tools/archive/refs/tags/v${PV}.tar.gz -> ${P}.tar.gz"
+SRC_URI="https://github.com/madgagarin/chuwi-linux-tools/archive/refs/tags/v${MY_PV}.tar.gz -> ${PN}-${MY_PV}.tar.gz"
+S="${WORKDIR}/${PN}-${MY_PV}"
 
 LICENSE="GPL-2"
 SLOT="0"
@@ -56,19 +59,20 @@ src_install() {
 		systemd_dounit "${FILESDIR}/cmxd.service"
 	fi
 
-	# 4. Install kernel config snippet for dist-kernel / gentoo-kernel
-	insinto /etc/kernel/config.d
-	doins "${FILESDIR}/50-chuwi-sensors.config"
-
-	# 5. Install patch for gentoo-kernel
+	# 4. Install patch for gentoo-kernel and gentoo-sources
 	insinto /etc/portage/patches/sys-kernel/gentoo-kernel
 	doins "${FILESDIR}/cmx.patch"
 	insinto /etc/portage/patches/sys-kernel/gentoo-sources
 	doins "${FILESDIR}/cmx.patch"
 
-	# 6. Install optimized kernel config for Chuwi FreeBook 360 i5-1215U
+	# 5. Install kernel configuration snippet for automatic sensor merging
+	insinto /etc/kernel/config.d
+	doins "${FILESDIR}/50-chuwi-sensors.config"
+
+	# 6. Install hardware kernel configs into documentation/share and savedconfig
 	insinto /usr/share/${PN}/kernel-configs
 	doins "${FILESDIR}/kernel-config-chuwi-freebook-i5-1215u"
+	doins "${FILESDIR}/50-chuwi-sensors.config"
 	insinto /etc/portage/savedconfig/sys-kernel
 	newins "${FILESDIR}/kernel-config-chuwi-freebook-i5-1215u" gentoo-kernel
 
@@ -85,21 +89,14 @@ pkg_postinst() {
 	udev_reload
 
 	elog "========================================================================"
-	elog "Chuwi Linux Tools (v7.0.0) has been installed successfully!"
+	elog "Chuwi Linux Tools (v7.0.0-r1) has been installed successfully!"
 	elog "========================================================================"
 	elog ""
 	elog "Installed hardware support files:"
 	elog "  * Kernel patch:         /etc/portage/patches/sys-kernel/gentoo-kernel/cmx.patch"
 	elog "  * Kernel config:        /etc/kernel/config.d/50-chuwi-sensors.config"
-	elog "  * Optimized 2-min cfg:  /etc/portage/savedconfig/sys-kernel/gentoo-kernel"
+	elog "  * Device kernel config: /usr/share/chuwi-linux-tools/kernel-configs/"
 	elog "  * Module autoload:      /usr/lib/modules-load.d/cmx.conf"
-	elog ""
-	elog "IMPORTANT (First-time installation only):"
-	elog "  If this is a fresh install and your running kernel was built before"
-	elog "  this package was installed, you MUST re-emerge your kernel once to apply"
-	elog "  the dual-sensor patch and optimized config (~2 minutes build time):"
-	elog "    # emerge --ask sys-kernel/gentoo-kernel"
-	elog "    # reboot"
 	elog ""
 	elog "Service management (OpenRC):"
 	elog "  # rc-update add cmxd default"
