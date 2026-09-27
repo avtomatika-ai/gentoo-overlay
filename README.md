@@ -102,9 +102,16 @@ emaint sync -r avtomatika-ai
    ```
 
 3. **First-Time Installation Step:**
-   On a fresh system, re-emerge the kernel once to apply the dual-sensor patch and the ultra-fast 2-minute hardware configuration:
+   On a fresh system, configure and re-emerge the kernel once:
    ```bash
    mount /boot && mount /efi
+
+   # Optional: use the tailored ~2-minute Chuwi FreeBook kernel config
+   mkdir -p /etc/portage/savedconfig/sys-kernel
+   cp /usr/share/chuwi-linux-tools/kernel-configs/kernel-config-chuwi-freebook-i5-1215u \
+      /etc/portage/savedconfig/sys-kernel/gentoo-kernel
+
+   # Rebuild kernel (applies dual-sensor patch and sensor configuration)
    emerge --ask sys-kernel/gentoo-kernel
    reboot
    ```
