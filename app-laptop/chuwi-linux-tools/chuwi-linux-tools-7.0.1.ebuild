@@ -40,14 +40,18 @@ src_compile() {
 	local dbus_opt=0
 	use dbus && dbus_opt=1
 	emake -C cmxd CC="$(tc-getCC)" ENABLE_DBUS=${dbus_opt} PREFIX="/usr"
+
+	# 3. Compile cmxsd session daemon
+	emake -C cmxsd CC="$(tc-getCC)" PREFIX="/usr"
 }
 
 src_install() {
 	# 1. Install kernel module
 	linux-mod-r1_src_install
 
-	# 2. Install cmxd binary and libraries
+	# 2. Install cmxd, cmxsd binaries and libraries
 	dosbin cmxd/cmxd
+	dobin cmxsd/cmxsd
 	dolib.so cmxd/libcmx.so*
 	insinto /usr/include/libcmx
 	doins cmxd/src/cmxd-protocol.h
@@ -65,16 +69,14 @@ src_install() {
 	insinto /etc/portage/patches/sys-kernel/gentoo-sources
 	doins "${FILESDIR}/cmx.patch"
 
-	# 5. Install kernel configuration snippet for automatic sensor merging
+	# 5. Install kernel configuration snippet for automatic sensor and hardware merging
 	insinto /etc/kernel/config.d
 	doins "${FILESDIR}/50-chuwi-sensors.config"
 
-	# 6. Install hardware kernel configs into documentation/share and savedconfig
+	# 6. Install hardware kernel configs for reference into /usr/share
 	insinto /usr/share/${PN}/kernel-configs
 	doins "${FILESDIR}/kernel-config-chuwi-freebook-i5-1215u"
 	doins "${FILESDIR}/50-chuwi-sensors.config"
-	insinto /etc/portage/savedconfig/sys-kernel
-	newins "${FILESDIR}/kernel-config-chuwi-freebook-i5-1215u" gentoo-kernel
 
 	# 7. Install kernel module autoload configuration
 	insinto /usr/lib/modules-load.d
@@ -89,12 +91,12 @@ pkg_postinst() {
 	udev_reload
 
 	elog "========================================================================"
-	elog "Chuwi Linux Tools (v7.0.0-r1) has been installed successfully!"
+	elog "Chuwi Linux Tools (${PVR}) has been installed successfully!"
 	elog "========================================================================"
 	elog ""
 	elog "Installed hardware support files:"
 	elog "  * Kernel patch:         /etc/portage/patches/sys-kernel/gentoo-kernel/cmx.patch"
-	elog "  * Kernel config:        /etc/kernel/config.d/50-chuwi-sensors.config"
+	elog "  * Hardware config:      /etc/kernel/config.d/50-chuwi-sensors.config"
 	elog "  * Device kernel config: /usr/share/chuwi-linux-tools/kernel-configs/"
 	elog "  * Module autoload:      /usr/lib/modules-load.d/cmx.conf"
 	elog ""

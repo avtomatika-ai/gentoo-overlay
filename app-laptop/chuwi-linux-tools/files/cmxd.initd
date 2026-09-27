@@ -17,7 +17,10 @@ depend() {
 
 start_pre() {
 	checkpath -d -m 0755 /run/cmxd
+	if ! lsmod | grep -q "^iio_trig_sysfs "; then
+		modprobe -q iio-trig-sysfs 2>/dev/null || true
+	fi
 	if ! lsmod | grep -q "^cmx "; then
-		modprobe -q cmx
+		modprobe -q cmx 2>/dev/null || true
 	fi
 }
